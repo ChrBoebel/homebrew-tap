@@ -92,6 +92,8 @@ someone confirms them on a clean install (use and quit the app, then check):
 
 ## License
 
+The files in this tap (the cask, scripts and workflow) are licensed under the BSD 2-Clause License; see [LICENSE](LICENSE).
+
 - **Saywing** is open source under the
   [Apache License 2.0](https://github.com/ChrBoebel/saywing/blob/main/LICENSE).
 - **The bundled models have their own terms.** The Supertonic 3 speech model and voices are
