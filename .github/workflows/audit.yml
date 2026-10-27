@@ -48,4 +48,7 @@ jobs:
 
       - name: brew audit
         # --online downloads both DMGs (about 1 GB each) and verifies their sha256.
+        env:
+          # Avoid the shared runner IP's anonymous limit; the job token is read-only.
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
         run: brew audit --cask --strict --online --arch all --tap chrboebel/tap
