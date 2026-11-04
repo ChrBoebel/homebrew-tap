@@ -1,0 +1,55 @@
+name: Update Saywing cask
+
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Validate the public release without creating a branch or PR
+        type: boolean
+        default: true
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cask-bump-${{ github.event_name == 'pull_request' && github.ref || 'publisher' }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test release validation and bump safety
+        run: |
+          python3 -m unittest discover -s tests -v
+          bash -n scripts/bump.sh
+          shellcheck scripts/bump.sh
+
+  bump:
+    needs: test
+    if: github.repository == 'ChrBoebel/homebrew-tap' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the published release and open its bump PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          args=()
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          python3 scripts/auto-bump.py "${args[@]}"
