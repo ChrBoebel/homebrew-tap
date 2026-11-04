@@ -116,8 +116,31 @@ The cask pins a single `version "<version>,<build>"` and one sha256 per architec
 `on_arm` block downloads `.../downloads/saywing/Saywing-<version>-<build>.dmg`, and the
 `on_intel` block downloads `.../downloads/saywing/x86_64/Saywing-<version>-<build>.dmg`.
 
-The values in `Casks/saywing.rb` were taken from the live feeds on 2026-10-27
-(`0.1.30,130`, channel `beta`). **Bump them as soon as the next signed release is published.**
+### Automatic bump pull requests
+
+`.github/workflows/auto-bump.yml` checks the public feeds every 15 minutes (at minutes
+7, 22, 37 and 52). GitHub may delay scheduled runs. It waits until arm64 and Intel agree
+and the matching `v<version>-build<build>` GitHub release is published, including betas.
+Then it opens one `codex/bump-saywing-<version>-<build>` PR using the repository's ephemeral
+`GITHUB_TOKEN`; no personal access token or release secret is needed.
+
+The bot never approves or merges the PR. Existing, closed or merged bump PRs are not
+recreated. Older builds and replacements of an existing build's checksums are refused.
+Interrupted runs can recover an already pushed branch and retry a missing audit dispatch
+without rewriting published history.
+
+The bump job alone has `contents: write`, `pull-requests: write` and `actions: write`.
+Repository Settings → Actions → General must allow GitHub Actions to create pull requests
+(the GitHub setting is named “Allow GitHub Actions to create and approve pull requests”).
+The default token permissions remain read-only. This workflow does not submit approvals.
+It explicitly dispatches the existing read-only `audit.yml` on the bump branch so the full
+online audit verifies both DMGs. GitHub may also show approval-required PR-event runs;
+the separately dispatched audit runs without changing fork approval rules.
+
+For a manual check, run “Update Saywing cask” from Actions on `main`. Its default dry-run
+reads and validates only; disable `dry_run` to create a missing PR. For a failed audit,
+inspect the failure and rerun that audit after correcting the problem. Failed audits are
+not endlessly restarted by the scheduled workflow.
 
 ### Bump to a new release
 
