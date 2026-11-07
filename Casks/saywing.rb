@@ -1,13 +1,13 @@
 cask "saywing" do
-  version "0.1.31,131"
+  version "0.1.32,132"
 
   on_arm do
-    sha256 "3fe8d125045022aef3c470195d17c1ed7410e39e61c637b6149397267fbe5f96"
+    sha256 "ae40929720d5d973429e0360ff7a9ff476b898df492ba22970bb42a1acb81ac4"
 
     url "https://www.christopherboebel.com/downloads/saywing/Saywing-#{version.csv.first}-#{version.csv.second}.dmg"
   end
   on_intel do
-    sha256 "bad1a6b64542eaf1c1ecf61c49725a20ede878269e9774135f213c02f13620d6"
+    sha256 "ac009851d963151f76f33cc01623a17b8ecdf605f830ebd11ad3b733c001bf32"
 
     url "https://www.christopherboebel.com/downloads/saywing/x86_64/Saywing-#{version.csv.first}-#{version.csv.second}.dmg"
   end
