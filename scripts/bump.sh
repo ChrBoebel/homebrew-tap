@@ -31,7 +31,8 @@ fail() {
 
 # field <file> <key>: prints a top-level string value of a JSON file.
 field() {
-  /usr/bin/plutil -extract "$2" raw -o - "$1" 2>/dev/null || fail "missing \"$2\" in $3"
+  python3 -c 'import json, sys; value = json.load(open(sys.argv[1]))[sys.argv[2]]; isinstance(value, str) or sys.exit(1); print(value)' \
+    "$1" "$2" 2>/dev/null || fail "missing string field $2 in $3"
 }
 
 read_feed() { # <arch> <subpath>
